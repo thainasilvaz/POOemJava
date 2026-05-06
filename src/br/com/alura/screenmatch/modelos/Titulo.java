@@ -1,19 +1,34 @@
 package br.com.alura.screenmatch.modelos;
 
+import br.com.alura.screenmatch.excecao.ErroDeConversaoDeAnoException;
+import com.google.gson.annotations.SerializedName;
+
 public class Titulo implements Comparable<Titulo>
 {
+
+    public Titulo(String nome, int anoDeLancamento) {
+        this.nome = nome;
+        this.anoDeLancamento = anoDeLancamento;
+    }
+
     //Atributos de um filme/série
 
     private String nome;
+
     private int anoDeLancamento;
+
     private boolean incluidoNoPlano;
     private double somaDasAvaliacoes;
     private int totalDeAvaliacoes;
     private int duracaoEmMinutos;
 
-    public Titulo(String nome, int anoDeLancamento) {
-        this.nome = nome;
-        this.anoDeLancamento = anoDeLancamento;
+    public Titulo(TituloOMDB meuTituloOMDB) {
+        this.nome = meuTituloOMDB.title();
+        if(meuTituloOMDB.year().length() > 4){
+            throw new ErroDeConversaoDeAnoException("Não consegui converter o ano porque tem mais de 04 caracteres."); //criando minha própria exception
+        }
+        this.anoDeLancamento = Integer.valueOf(meuTituloOMDB.year());
+        this.duracaoEmMinutos = Integer.valueOf(meuTituloOMDB.runtime().substring(0, 2));
     }
 
     public String getNome() {
@@ -89,5 +104,10 @@ public class Titulo implements Comparable<Titulo>
     @Override
     public int compareTo(Titulo outroTitulo) {
         return this.getNome().compareTo(outroTitulo.getNome());
+    }
+
+    @Override
+    public String toString() {
+        return "Nome:'" + nome + '\'' + ", Ano de Lancamento: " + anoDeLancamento + ", " + "Duração em minutos: " + duracaoEmMinutos;
     }
 }
